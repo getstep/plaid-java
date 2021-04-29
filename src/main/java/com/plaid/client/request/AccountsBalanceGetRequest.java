@@ -21,15 +21,23 @@ public class AccountsBalanceGetRequest extends BaseAccessTokenRequest {
 
   public AccountsBalanceGetRequest withAccountIds(List<String> accountIds) {
     notEmpty(accountIds, "accountIds");
-    this.options = new Options(new ArrayList<>(accountIds));
+    if (this.options == null) {
+      this.options = new Options();
+    }
+    this.options.accountIds = new ArrayList<>(accountIds);
+    return this;
+  }
+
+  public AccountsBalanceGetRequest withMinLastUpdatedDatetime(String minLastUpdatedDatetime) {
+    if (this.options == null) {
+      this.options = new Options();
+    }
+    this.options.minLastUpdatedDatetime = minLastUpdatedDatetime;
     return this;
   }
 
   private static class Options {
     private List<String> accountIds;
-
-    private Options(List<String> accountIds) {
-      this.accountIds = accountIds;
-    }
+    private String minLastUpdatedDatetime;
   }
 }

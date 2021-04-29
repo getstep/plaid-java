@@ -10,9 +10,9 @@ import org.junit.Test;
 import retrofit2.Response;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
-import static com.plaid.client.integration.AbstractItemIntegrationTest.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -63,6 +63,29 @@ public class AccountsBalanceGetTest extends AbstractItemIntegrationTest {
     response = client().service().accountsBalanceGet(
       new AccountsBalanceGetRequest(getItemPublicTokenExchangeResponse().getAccessToken()).withAccountIds(Arrays.asList(accountId)))
       .execute();
+    assertSuccessResponse(response);
+
+    // item should be the same one we created
+    assertItemEquals(getItem(), response.body().getItem());
+
+    // sandbox should return expected accounts
+    List<Account> accounts = response.body().getAccounts();
+    assertEquals(1, accounts.size());
+    assertAccount(accounts.get(0), "depository", "savings", 200d, 210d, null, "Plaid Saving", "1111", "Plaid Silver Standard 0.1% Interest Saving");
+  }
+
+  @Test
+  public void testAccountsBalanceGetWithMinLastUpdatedDatetime() throws Exception {
+    // first call to get an account ID
+    Response<AccountsBalanceGetResponse> response = client().service().accountsBalanceGet(
+            new AccountsBalanceGetRequest(getItemPublicTokenExchangeResponse().getAccessToken()))
+            .execute();
+    assertSuccessResponse(response);
+
+    // call under test
+    response = client().service().accountsBalanceGet(
+            new AccountsBalanceGetRequest(getItemPublicTokenExchangeResponse().getAccessToken()).withMinLastUpdatedDatetime(new Date().toString()))
+            .execute();
     assertSuccessResponse(response);
 
     // item should be the same one we created
